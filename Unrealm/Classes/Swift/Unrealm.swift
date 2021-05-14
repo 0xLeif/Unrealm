@@ -10,7 +10,7 @@
 import Foundation
 import RealmSwift
 import Realm
-import RuntimeNew
+import Runtime
 
 public typealias Realm = RealmSwift.Realm
 public typealias NotificationToken = RealmSwift.NotificationToken
@@ -248,7 +248,7 @@ public extension RealmableBase {
 	- parameter block: The block to call with information about changes to the object.
 	- returns: A token which must be held for as long as you want updates to be delivered.
 	*/
-	func observe(_ block: @escaping (ObjectChange<Object>) -> Void) -> NotificationToken {
+    func observe(_ block: @escaping (ObjectChange) -> Void) -> NotificationToken {
 		guard let info = try? typeInfo(of: type(of: self)), info.kind == .class else {
 			fatalError("Unrealm: Only class instances can observe for changes")
 		}
@@ -352,9 +352,9 @@ public extension Realmable {
 						if let t = property.type as? RealmableEnum.Type, let val = t.init(rlmValue: value) {
 							try property.set(value: val, on: &self)
 						} else if child.value is [AnyHashable:Any], let data = value as? Data {
-							if let json = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) {
-								try property.set(value: json, on: &self)
-							}
+                            if let json = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) {
+                                try property.set(value: json, on: &self)
+                            }
 						} else {
 							try property.set(value: value, on: &self)
 						}
